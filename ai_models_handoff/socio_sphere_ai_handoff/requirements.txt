@@ -1,0 +1,16 @@
+# Socio-Sphere AI Engine — Core Dependencies
+# Python >= 3.10, <= 3.12 recommended
+
+torch>=2.0.0
+torchvision>=0.15.0
+sentence-transformers>=2.2.0
+scikit-learn>=1.2.0
+joblib>=1.2.0
+pandas>=2.0.0
+numpy>=1.24.0
+geopy>=2.3.0
+ultralytics>=8.0.0
+Pillow>=9.0.0
+fastapi>=0.100.0
+uvicorn>=0.22.0
+python-multipart>=0.0.6

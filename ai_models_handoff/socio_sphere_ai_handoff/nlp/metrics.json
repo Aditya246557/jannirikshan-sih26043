@@ -1,0 +1,29 @@
+{
+  "version": "0.1.0",
+  "embedding_model": "all-MiniLM-L6-v2",
+  "classifier": "LogisticRegression",
+  "training_samples": 312,
+  "validation_samples": 67,
+  "test_samples": 68,
+  "classes": [
+    "Accessibility",
+    "Agriculture",
+    "Civic Complaints",
+    "Education",
+    "Environment",
+    "Healthcare",
+    "Infrastructure",
+    "Sanitation",
+    "Water"
+  ],
+  "validation": {
+    "accuracy": 0.850746,
+    "macro_f1": 0.848946,
+    "weighted_f1": 0.850822
+  },
+  "test": {
+    "accuracy": 0.808824,
+    "macro_f1": 0.806242,
+    "weighted_f1": 0.805795
+  }
+}

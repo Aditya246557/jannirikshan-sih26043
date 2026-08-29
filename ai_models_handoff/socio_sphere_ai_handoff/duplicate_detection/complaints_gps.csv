@@ -1,0 +1,11 @@
+id,issue_type,text,latitude,longitude
+1,Pothole,"Main road par bada pothole hai",23.3441,85.3096
+2,Pothole,"Main road par dangerous gaddha hai",23.3443,85.3098
+3,Pothole,"Road mein bada gaddha hai",23.3445,85.3099
+4,Pothole,"Hospital road par bada pothole hai",23.3560,85.3270
+5,Pothole,"Hospital road mein dangerous gaddha hai",23.3563,85.3272
+6,Broken Street Light,"Main road ki street light band hai",23.3442,85.3097
+7,Broken Street Light,"Street lights kaam nahi kar rahi",23.3444,85.3099
+8,Fallen Tree,"Road par ped gir gaya hai",23.3446,85.3100
+9,Fallen Tree,"Gira hua ped road block kar raha hai",23.3447,85.3101
+10,Garbage,"Area mein garbage collect nahi hua",23.3448,85.3102

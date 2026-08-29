@@ -1,0 +1,15 @@
+{
+  "dataset": "D:\\new-ai-model\\ai-model\\datasets\\nlp\\raw\\civic_subcategories.csv",
+  "samples": 60,
+  "classes": [
+    "Broken Street Light",
+    "Fallen Tree",
+    "Garbage",
+    "Pothole"
+  ],
+  "accuracy_training": 0.9333,
+  "macro_f1_training": 0.9335,
+  "weighted_f1_training": 0.9335,
+  "embedding_model": "all-MiniLM-L6-v2",
+  "note": "Training-set evaluation only. Not a production accuracy estimate."
+}

@@ -1,0 +1,12 @@
+path: D:/new-ai-model/ai-model/adhikar-final
+
+train: train/images
+val: valid/images
+
+nc: 4
+
+names:
+  0: pothole
+  1: garbage
+  2: broken_street_light
+  3: fallen_tree

@@ -1,0 +1,202 @@
+{
+  "project": "Socio-Sphere AI Engine",
+  "version": "1.0.0-handoff",
+  "description": "Comprehensive 5-module AI intelligence pipeline for citizen grievance classification, duplicate clustering, priority escalation, and visual evidence verification.",
+  "python_version_recommended": "3.10 - 3.12",
+  "modules": [
+    {
+      "id": "module_1_nlp_complaint_classifier",
+      "module_name": "NLP Complaint Classification (Level 1 Domain)",
+      "model_file": "nlp/complaint_classifier.joblib",
+      "label_encoder": "nlp/label_encoder.joblib",
+      "metrics_file": "nlp/metrics.json",
+      "inference_script": "nlp/predict.py",
+      "framework": "scikit-learn + sentence-transformers",
+      "model_type": "LogisticRegression on SentenceTransformer embeddings (all-MiniLM-L6-v2, 384-d)",
+      "input_fields": {
+        "text": "string (Raw complaint description in English/Hinglish)"
+      },
+      "output_fields": {
+        "domain": "string",
+        "domain_confidence": "float (0.0 to 1.0)",
+        "domain_confidence_percent": "float (0.0 to 100.0)",
+        "domain_rankings": "array of {category, confidence, confidence_percent}"
+      },
+      "classes": [
+        "Accessibility",
+        "Agriculture",
+        "Civic Complaints",
+        "Education",
+        "Environment",
+        "Healthcare",
+        "Infrastructure",
+        "Sanitation",
+        "Water"
+      ],
+      "benchmark_metrics": {
+        "accuracy": 0.8088,
+        "macro_f1": 0.8062,
+        "weighted_f1": 0.8058
+      },
+      "status": "Production Ready",
+      "known_limitations": "Trained primarily on common civic & governance themes; performance on rare dialects or heavily slang-laden code-mixed text may require confidence threshold gating."
+    },
+    {
+      "id": "module_2_civic_subclassifier",
+      "module_name": "Civic Issue Subclassification (Level 2 Civic Issue)",
+      "model_file": "civic_issue/civic_classifier.joblib",
+      "label_encoder": "civic_issue/civic_label_encoder.joblib",
+      "metrics_file": "civic_issue/civic_metrics.json",
+      "inference_script": "civic_issue/inference/predict_civic.py",
+      "framework": "scikit-learn + sentence-transformers",
+      "model_type": "LogisticRegression on SentenceTransformer embeddings (all-MiniLM-L6-v2, 384-d)",
+      "input_fields": {
+        "text": "string (Complaint text when Level 1 Domain is 'Civic Complaints')"
+      },
+      "output_fields": {
+        "civic_issue": "string",
+        "confidence": "float (0.0 to 1.0)",
+        "confidence_percent": "float (0.0 to 100.0)",
+        "rankings": "array of {issue, confidence, confidence_percent}"
+      },
+      "classes": [
+        "Broken Street Light",
+        "Fallen Tree",
+        "Garbage",
+        "Pothole"
+      ],
+      "benchmark_metrics": {
+        "training_accuracy": 0.9333,
+        "training_macro_f1": 0.9335
+      },
+      "status": "Production Ready",
+      "known_limitations": "Specialized for the 4 core civic issues. Non-civic or unlisted issues should fall back to general domain handling."
+    },
+    {
+      "id": "module_3_duplicate_detection_gps",
+      "module_name": "Duplicate Detection + GPS Clustering",
+      "model_file": "sentence-transformers/all-MiniLM-L6-v2 (HuggingFace Hub / local cache)",
+      "label_encoder": null,
+      "metrics_file": "duplicate_detection/hybrid_evaluation.csv",
+      "inference_script": "duplicate_detection/duplicate_detector.py (Pairwise) / duplicate_detection/gps_cluster.py (GPS)",
+      "framework": "sentence-transformers + numpy + geopy",
+      "model_type": "Hybrid rule-weighted similarity (50% semantic, 25% issue type, 25% location token Jaccard) with strict location gating + Geodesic DBSCAN/graph-clustering",
+      "input_fields": {
+        "pairwise": {
+          "text_a": "string",
+          "text_b": "string",
+          "issue_a": "string",
+          "issue_b": "string",
+          "location_a": "string",
+          "location_b": "string"
+        },
+        "gps": {
+          "id": "string | int",
+          "issue_type": "string",
+          "latitude": "float",
+          "longitude": "float",
+          "radius_meters": "float (default 100.0)"
+        }
+      },
+      "output_fields": {
+        "pairwise": {
+          "text_similarity": "float",
+          "issue_match": "float",
+          "location_match": "float",
+          "location_status": "STRONG | PARTIAL | DIFFERENT",
+          "duplicate_score": "float",
+          "is_duplicate": "boolean",
+          "decision_reason": "string"
+        },
+        "gps": {
+          "cluster_id": "int",
+          "issue_type": "string",
+          "cluster_size": "int",
+          "center_latitude": "float",
+          "center_longitude": "float",
+          "complaint_ids": "array of id"
+        }
+      },
+      "classes": [
+        "DUPLICATE / SAME PHYSICAL ISSUE",
+        "NOT DUPLICATE / SEPARATE ISSUE"
+      ],
+      "benchmark_metrics": {
+        "threshold_tuned_f1": 0.7355,
+        "text_threshold": 0.54,
+        "duplicate_score_threshold": 0.7
+      },
+      "status": "Production Ready",
+      "known_limitations": "Pairwise textual location matching uses token-overlap; for production precision, always combine with GPS geodesic clustering within 100m."
+    },
+    {
+      "id": "module_4_priority_prediction",
+      "module_name": "Priority Prediction & Escalation",
+      "model_file": "priority/priority_classifier.joblib",
+      "label_encoder": null,
+      "metrics_file": "priority/priority_metrics.json",
+      "inference_script": "priority/predict_priority.py / priority/cluster_priority.py",
+      "framework": "scikit-learn",
+      "model_type": "Tabular Classifier on Multi-factor Risk & Cluster features",
+      "input_fields": {
+        "issue_type": "string (e.g. Pothole, Fallen Tree, Broken Street Light, Garbage)",
+        "cluster_size": "int (number of complaints in geographic cluster)",
+        "severity": "int (1 to 5 scale)",
+        "safety_risk": "int (1 to 5 scale)",
+        "duration_hours": "float (hours elapsed since first report)"
+      },
+      "output_fields": {
+        "priority": "LOW | MEDIUM | HIGH | CRITICAL",
+        "confidence": "float (0.0 to 1.0)",
+        "confidence_percent": "float (0.0 to 100.0)",
+        "probability_distribution": "object mapping each priority to probability"
+      },
+      "classes": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ],
+      "benchmark_metrics": {
+        "accuracy": 0.875,
+        "weighted_f1": 0.8333
+      },
+      "status": "Baseline Model (Functional)",
+      "known_limitations": "Trained on synthetic baseline dataset (n=30). Provides initial heuristics for workflow prioritization; should be retrained once municipal SLA resolution logs accumulate."
+    },
+    {
+      "id": "module_5_computer_vision",
+      "module_name": "Computer Vision & Evidence Moderation",
+      "model_file": "computer_vision/weights/best.pt",
+      "label_encoder": "computer_vision/data.yaml",
+      "metrics_file": "computer_vision/data.yaml",
+      "inference_script": "computer_vision/predict_cv.py / computer_vision/ai_service/main.py",
+      "framework": "Ultralytics YOLO (PyTorch)",
+      "model_type": "YOLO26n / YOLOv8n custom trained object detector with 2-stage guardrails",
+      "input_fields": {
+        "image": "File | FilePath | PIL.Image (JPG, PNG, WebP)"
+      },
+      "output_fields": {
+        "valid_civic_issue": "boolean",
+        "detections_count": "int",
+        "top_category": "pothole | garbage | broken_street_light | fallen_tree | null",
+        "top_confidence_percent": "float",
+        "detections": "array of {class_id, class_name, confidence, confidence_percent, bounding_box: {x1, y1, x2, y2}}"
+      },
+      "classes": [
+        "pothole",
+        "garbage",
+        "broken_street_light",
+        "fallen_tree"
+      ],
+      "benchmark_metrics": {
+        "mAP_50": 0.8206,
+        "precision": 0.8478,
+        "recall": 0.7602,
+        "mAP_50_95": 0.4857
+      },
+      "status": "Production Ready",
+      "known_limitations": "Optimized for daylight or standard street lighting conditions. Extreme darkness or heavy blur may reduce bounding box confidence."
+    }
+  ]
+}

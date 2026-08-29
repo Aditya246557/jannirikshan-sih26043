@@ -1,0 +1,117 @@
+services:
+  # ============================================================
+  # 1. POSTGRESQL DATABASE
+  # ============================================================
+  postgres:
+    image: postgres:17-alpine
+    container_name: sociosphere-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-sih26043}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-Ishant@09ph}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sih26043"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - sociosphere_net
+
+  # ============================================================
+  # 2. FASTAPI AI SERVICE (YOLO + NLP + DEDUPLICATION)
+  # ============================================================
+  ai-service:
+    build:
+      context: ./ai_service
+      dockerfile: Dockerfile
+    container_name: sociosphere-ai-service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - sociosphere_net
+
+  # ============================================================
+  # 3. SPRING BOOT BACKEND API
+  # ============================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sociosphere-backend
+    restart: unless-stopped
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-sih26043}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-Ishant@09ph}
+      AI_SERVICE_URL: ${AI_SERVICE_URL:-http://ai-service:8000}
+      JWT_SECRET: ${JWT_SECRET:-CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_KEY_FOR_SIH26043}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000}
+      UPLOAD_DIR: ${UPLOAD_DIR:-/app/uploads/complaints}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ai-service:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    volumes:
+      - uploads_data:/app/uploads
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/api/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - sociosphere_net
+
+  # ============================================================
+  # 4. REACT / VITE FRONTEND (NGINX SPA & REVERSE PROXY)
+  # ============================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sociosphere-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "5173:5173"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://127.0.0.1:5173/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sociosphere_net
+
+# ============================================================
+# NETWORKS & VOLUMES
+# ============================================================
+networks:
+  sociosphere_net:
+    name: sociosphere_net
+    driver: bridge
+
+volumes:
+  postgres_data:
+    name: sociosphere_postgres_data
+  uploads_data:
+    name: sociosphere_uploads_data
