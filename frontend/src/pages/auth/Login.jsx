@@ -126,7 +126,7 @@ export default function Login() {
               </div>
               <div>
                 <span style={{ fontSize: "17px", fontWeight: 900, letterSpacing: "0.04em", color: "#F5F5F2" }}>
-                  SOCIO-SPHERE
+                  JanNirikshan
                 </span>
                 <div style={{ fontSize: "9.5px", fontWeight: 800, color: "#FFD21F", letterSpacing: "0.08em" }}>
                   SIH26043 • NATIONAL CIVIC INNOVATION GRID
@@ -243,7 +243,7 @@ export default function Login() {
               Welcome back
             </h1>
             <p style={{ fontSize: "13px", color: "#8F9499", margin: 0 }}>
-              Sign in to your SOCIO-SPHERE command center.
+              Sign in to your JanNirikshan command center.
             </p>
           </div>
 

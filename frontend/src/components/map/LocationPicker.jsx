@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   MapContainer,
   TileLayer,
-  CircleMarker,
+  Marker,
   Popup,
   useMap,
   useMapEvents
 } from "react-leaflet";
+import { createPinIcon } from "./mapMarkerUtils";
 import "leaflet/dist/leaflet.css";
 
 const DEFAULT_CENTER = [20.5937, 78.9629];
@@ -175,25 +176,16 @@ export default function LocationPicker({ value, onChange }) {
           <Recenter position={hasSelected ? position : null} />
 
           {hasSelected && (
-            <CircleMarker
-              center={position}
-              radius={10}
-              pathOptions={{
-                color: "#0B0D0F",
-                fillColor: "#FFD21F",
-                fillOpacity: 0.95,
-                weight: 3
-              }}
-            >
+            <Marker position={position} icon={createPinIcon("#FFD21F", 34, true)}>
               <Popup>
-                <div style={{ color: "#0B0D0F", fontSize: "12px", fontWeight: 700 }}>
-                  📍 Selected Challenge Location
-                  <div style={{ fontSize: "10px", color: "#64748b" }}>
+                <div style={{ color: "#F5F5F2", background: "#17191C", padding: "8px 10px", fontSize: "12px", fontWeight: 700, borderRadius: "6px" }}>
+                  <div style={{ color: "#FFD21F", marginBottom: "3px" }}>📍 Selected Challenge Location</div>
+                  <div style={{ fontSize: "10.5px", color: "#8F9499" }}>
                     Lat: {value.latitude}, Lng: {value.longitude}
                   </div>
                 </div>
               </Popup>
-            </CircleMarker>
+            </Marker>
           )}
         </MapContainer>
 

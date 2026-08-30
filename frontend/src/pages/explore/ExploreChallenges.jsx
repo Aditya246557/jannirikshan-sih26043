@@ -16,9 +16,23 @@ export default function ExploreChallenges() {
   const fetchChallenges = async () => {
     setLoading(true);
     try {
-      const res = await complaintService.explore(filters);
-      const list = Array.isArray(res) ? res : res?.content || res?.data?.content || res?.data || [];
-      setChallenges(list);
+      const res = await complaintService.explore({ size: 200, ...filters });
+      const rawList = Array.isArray(res)
+        ? res
+        : res?.content
+        ? res.content
+        : res?.data?.content
+        ? res.data.content
+        : res?.data
+        ? res.data
+        : [];
+      const sortedList = [...rawList].sort(
+        (a, b) =>
+          (new Date(b?.createdAt || 0).getTime() || 0) -
+          (new Date(a?.createdAt || 0).getTime() || 0) ||
+          ((b?.id || 0) - (a?.id || 0))
+      );
+      setChallenges(sortedList);
     } catch (e) {
       console.error(e);
     } finally {
@@ -67,7 +81,7 @@ export default function ExploreChallenges() {
             </div>
             <div>
               <span style={{ fontSize: "17px", fontWeight: 900, letterSpacing: "0.03em", color: "#F5F5F2" }}>
-                SOCIO-SPHERE
+                JanNirikshan
               </span>
               <div style={{ fontSize: "9.5px", fontWeight: 800, color: "#FFD21F", letterSpacing: "0.08em" }}>
                 SIH26043 • EXPLORE CHALLENGES MAP

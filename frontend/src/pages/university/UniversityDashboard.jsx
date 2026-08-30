@@ -30,18 +30,32 @@ export default function UniversityDashboard() {
       setProfile(p);
       if (p?.id) {
         const [ass, prjs, facs, offers] = await Promise.all([
-          universityService.getAssignedChallenges(p.id),
-          projectService.getByUniversity(p.id),
-          universityService.getFaculty(p.id),
+          universityService.getAssignedChallenges(p.id).catch(() => []),
+          projectService.getByUniversity(p.id).catch(() => []),
+          universityService.getFaculty(p.id).catch(() => []),
           industryService.getUniversityPartnerships(p.id).catch(() => [])
         ]);
         setAssigned(Array.isArray(ass) ? ass : ass?.data || []);
         setProjects(Array.isArray(prjs) ? prjs : prjs?.data || prjs?.content || []);
         setFacultyList(Array.isArray(facs) ? facs : facs?.data || []);
-        setIndustryOffers(Array.isArray(offers) ? offers : offers?.data || []);
+
+        const rawOffers = Array.isArray(offers)
+          ? offers
+          : Array.isArray(offers?.data)
+          ? offers.data
+          : Array.isArray(offers?.content)
+          ? offers.content
+          : [];
+        const sortedOffers = [...rawOffers].sort(
+          (a, b) =>
+            (new Date(b?.createdAt || 0).getTime() || 0) -
+            (new Date(a?.createdAt || 0).getTime() || 0) ||
+            ((b?.id || 0) - (a?.id || 0))
+        );
+        setIndustryOffers(sortedOffers);
       }
     } catch (e) {
-      console.error(e);
+      console.error("University dashboard data loading error:", e);
     } finally {
       setLoading(false);
     }
@@ -203,7 +217,7 @@ export default function UniversityDashboard() {
             </div>
             <div>
               <div style={{ fontSize: "16px", fontWeight: 900, color: "#F5F5F2", letterSpacing: "0.02em" }}>
-                SOCIO-SPHERE
+                JanNirikshan
               </div>
               <div style={{ fontSize: "10px", fontWeight: 800, color: "#FF4FA3", letterSpacing: "0.08em" }}>
                 SIH26043 • UNIVERSITY
@@ -753,9 +767,10 @@ export default function UniversityDashboard() {
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))", gap: "16px" }}>
                 {industryOffers.map((offer) => {
-                  const isOffered = offer.status === "OFFERED";
-                  const isAccepted = offer.status === "ACCEPTED" || offer.status === "ACTIVE";
-                  const isRejected = offer.status === "REJECTED";
+                  const s = String(offer.status || "").toUpperCase();
+                  const isOffered = ["OFFERED", "PENDING", "PROPOSED"].includes(s);
+                  const isAccepted = ["ACCEPTED", "ACTIVE", "APPROVED", "COMMITTED"].includes(s);
+                  const isRejected = ["REJECTED", "DECLINED"].includes(s);
 
                   return (
                     <div
@@ -763,10 +778,10 @@ export default function UniversityDashboard() {
                       style={{
                         background: "#1D2023",
                         border: isOffered
-                          ? "1px solid rgba(245, 196, 0, 0.35)"
+                          ? "1px solid rgba(245, 196, 0, 0.45)"
                           : isAccepted
-                          ? "1px solid rgba(56, 239, 125, 0.35)"
-                          : "1px solid rgba(255, 92, 92, 0.25)",
+                          ? "1px solid rgba(56, 239, 125, 0.45)"
+                          : "1px solid rgba(255, 92, 92, 0.35)",
                         borderRadius: "14px",
                         padding: "18px",
                         display: "flex",

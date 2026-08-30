@@ -1,10 +1,48 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# ============================================================
+# JAN NIRIKSHAN (SIH26043) — PRODUCTION .GITIGNORE
+# ============================================================
 
-### STS ###
+# 1. Environment & Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.pkcs12
+*.crt
+id_rsa
+id_ed25519
+
+# 2. Node & Web Frontend (React / Vite)
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# 3. Java & Backend (Spring Boot / Maven)
+target/
+**/target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+.mvn/wrapper/maven-wrapper.jar
+!backend/src/main/resources/**/*.jar
+!**/gradle/wrapper/gradle-wrapper.jar
+!**/gradlew
+!**/gradlew.bat
+HELP.md
 .apt_generated
 .classpath
 .factorypath
@@ -13,21 +51,69 @@ target/
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+# 4. Python & AI Microservice (FastAPI / PyTorch)
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+**/venv/
+**/env/
+**/ENV/
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
+# 5. Flutter & Android (Mobile Citizen)
+.dart_tool/
+**/.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+mobile_citizen/build/
+**/build/
 !**/src/main/**/build/
 !**/src/test/**/build/
+*.apk
+*.aab
+*.app
+android/.gradle/
+**/android/.gradle/
+**/android/local.properties
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+ios/.symlinks/
+ios/Pods/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
 
-### VS Code ###
+# 6. IDEs & Operating Systems
+.idea/
+**/.idea/
 .vscode/
+**/.vscode/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# 7. Uploads & Runtime Data
+uploads/
+**/uploads/complaints/*
+!backend/uploads/complaints/.gitkeep
+!uploads/.gitkeep
+logs/
+*.log
+docker_postgres_data/
+sociosphere_postgres_data/
+

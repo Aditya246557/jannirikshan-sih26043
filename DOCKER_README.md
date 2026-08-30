@@ -1,17 +1,17 @@
-# SOCIO-SPHERE (SIH26043) — DOCKER DEPLOYMENT & RUNBOOK
+# JANNIRIKSHAN (SIH26043) — DOCKER DEPLOYMENT & RUNBOOK
 
-Production-ready multi-container orchestration for the complete SOCIO-SPHERE platform.
+Production-ready multi-container orchestration for the complete JanNirikshan platform.
 
 ---
 
 ## 1. Architecture Overview
 
-| Service | Technology | Port (Host:Container) | Internal DNS Name | Health Check Endpoint |
-| :--- | :--- | :---: | :---: | :--- |
-| **PostgreSQL** | PostgreSQL 17 Alpine | 5432:5432 | postgres | pg_isready -U postgres -d sih26043 |
-| **AI Microservice** | FastAPI, PyTorch, YOLOv8 | 8000:8000 | i-service | GET http://localhost:8000/health |
-| **Backend API** | Spring Boot 3.3.4 (Java 17) | 8080:8080 | ackend | GET http://localhost:8080/api/actuator/health |
-| **Frontend Web** | React 18, Vite, Nginx | 5173:5173 | rontend | GET http://localhost:5173/ |
+| Service | Container Name | Technology | Port (Host:Container) | Internal DNS Name | Health Check Endpoint |
+| :--- | :--- | :--- | :---: | :--- | :--- |
+| **PostgreSQL** | `jannirikshan-postgres` | PostgreSQL 17 Alpine | 5432:5432 | `postgres` | `pg_isready -U postgres -d sih26043` |
+| **AI Microservice** | `jannirikshan-ai-service` | FastAPI, PyTorch, YOLOv8 | 8000:8000 | `ai-service` | GET `http://localhost:8000/health` |
+| **Backend API** | `jannirikshan-backend` | Spring Boot 3.3.4 (Java 17) | 8080:8080 | `backend` | GET `http://localhost:8080/api/actuator/health` |
+| **Frontend Web** | `jannirikshan-frontend` | React 18, Vite, Nginx | 5173:5173 | `frontend` | GET `http://localhost:5173/` |
 
 ---
 

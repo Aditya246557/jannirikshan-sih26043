@@ -1,17 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { createPinIcon, createUserLocationIcon, MAP_PRIORITY_COLORS } from "../../components/map/mapMarkerUtils";
 import "leaflet/dist/leaflet.css";
 import complaintService from "../../services/complaintService";
 
 const DEFAULT_CENTER = [20.5937, 78.9629];
 
-const PRIORITY_COLORS = {
-  CRITICAL: "#FF5C5C",
-  HIGH: "#FFD21F",
-  MEDIUM: "#F5C400",
-  LOW: "#A8E063"
-};
+const PRIORITY_COLORS = MAP_PRIORITY_COLORS;
 
 function MapRecenter({ center, zoom }) {
   const map = useMap();
@@ -357,25 +353,16 @@ export default function CommunityMap() {
 
               {/* User Current Location Pulsing Pin */}
               {userLocation && (
-                <CircleMarker
-                  center={userLocation}
-                  radius={12}
-                  pathOptions={{
-                    color: "#ffffff",
-                    fillColor: "#38bdf8",
-                    fillOpacity: 0.95,
-                    weight: 3
-                  }}
-                >
+                <Marker position={userLocation} icon={createUserLocationIcon(28)}>
                   <Popup>
-                    <div style={{ color: "#0B0D0F", padding: "4px", fontSize: "12px", fontWeight: 800 }}>
-                      📍 YOU ARE HERE
-                      <div style={{ fontSize: "10px", color: "#64748b" }}>
+                    <div style={{ color: "#F5F5F2", background: "#17191C", padding: "8px 10px", fontSize: "12px", fontWeight: 800, borderRadius: "6px" }}>
+                      <div style={{ color: "#38bdf8", marginBottom: "3px" }}>📍 YOU ARE HERE</div>
+                      <div style={{ fontSize: "10.5px", color: "#8F9499" }}>
                         Lat: {userLocation[0]}, Lng: {userLocation[1]}
                       </div>
                     </div>
                   </Popup>
-                </CircleMarker>
+                </Marker>
               )}
 
               {/* Priority Markers */}
@@ -385,35 +372,29 @@ export default function CommunityMap() {
                 const lng = Number(c.longitude);
 
                 return (
-                  <CircleMarker
+                  <Marker
                     key={c.id}
-                    center={[lat, lng]}
-                    radius={9}
-                    pathOptions={{
-                      color: "#FFFFFF",
-                      fillColor: color,
-                      fillOpacity: 0.95,
-                      weight: 2
-                    }}
+                    position={[lat, lng]}
+                    icon={createPinIcon(color, 28)}
                   >
                     <Popup>
-                      <div style={{ color: "#0B0D0F", padding: "4px", fontSize: "12px" }}>
+                      <div style={{ color: "#F5F5F2", background: "#17191C", padding: "10px", fontSize: "12px", minWidth: "220px", borderRadius: "8px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
-                          <span style={{ fontSize: "9px", fontWeight: 800, background: "#17191C", color: color, padding: "1px 6px", borderRadius: "4px" }}>
-                            {c.priority}
+                          <span style={{ fontSize: "9px", fontWeight: 800, background: "#1D2023", color: color, padding: "2px 6px", borderRadius: "4px", border: `1px solid ${color}40` }}>
+                            ● {c.priority} SEVERITY
                           </span>
-                          <span style={{ fontSize: "9px", color: "#64748b" }}>ID #{c.id}</span>
+                          <span style={{ fontSize: "9.5px", color: "#8F9499" }}>ID #{c.id}</span>
                         </div>
 
-                        <strong style={{ display: "block", fontSize: "13px", color: "#0B0D0F", marginBottom: "4px" }}>
+                        <strong style={{ display: "block", fontSize: "13.5px", color: "#F5F5F2", margin: "4px 0", fontWeight: 850, lineHeight: 1.3 }}>
                           {c.title}
                         </strong>
 
-                        <div style={{ color: "#475569", fontSize: "11px", marginBottom: "2px" }}>
+                        <div style={{ color: "#B7BCC2", fontSize: "11px", marginBottom: "2px" }}>
                           {c.category} • {c.district || "Local Ward"}
                         </div>
 
-                        <div style={{ color: "#0284c7", fontWeight: 700, fontSize: "11px", marginBottom: "6px" }}>
+                        <div style={{ color: "#38BDF8", fontWeight: 800, fontSize: "11px", marginBottom: "8px" }}>
                           Status: {c.status}
                         </div>
 
@@ -421,20 +402,20 @@ export default function CommunityMap() {
                           to={`/citizen/complaints/${c.id}`}
                           style={{
                             display: "inline-block",
-                            background: "#0B0D0F",
-                            color: "#FFD21F",
-                            padding: "4px 10px",
+                            background: "#FFD21F",
+                            color: "#0B0D0F",
+                            padding: "5px 12px",
                             borderRadius: "6px",
                             textDecoration: "none",
                             fontSize: "11px",
-                            fontWeight: 800
+                            fontWeight: 850
                           }}
                         >
                           View Details →
                         </Link>
                       </div>
                     </Popup>
-                  </CircleMarker>
+                  </Marker>
                 );
               })}
             </MapContainer>

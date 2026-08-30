@@ -1196,26 +1196,62 @@ export default function SubmitComplaint() {
               <span>4. Field Impact</span>
             </div>
 
-            {/* ACTION BUTTON */}
-            <button
-              type="button"
-              onClick={() => navigate(`/citizen/complaints/${submittedComplaint.id}`)}
-              style={{
-                width: "100%",
-                background: "#FFD21F",
-                color: "#0B0D0F",
-                border: "none",
-                padding: "14px 28px",
-                borderRadius: "12px",
-                fontSize: "14px",
-                fontWeight: 900,
-                cursor: "pointer",
-                boxShadow: "0 0 20px rgba(255, 210, 31, 0.4)",
-                letterSpacing: "0.02em"
-              }}
-            >
-              ✓ VIEW MY SUBMISSION →
-            </button>
+            {/* ACTION BUTTONS */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <button
+                type="button"
+                onClick={() => navigate(`/citizen/complaints/${submittedComplaint.id}`)}
+                style={{
+                  width: "100%",
+                  background: "#FFD21F",
+                  color: "#0B0D0F",
+                  border: "none",
+                  padding: "14px 28px",
+                  borderRadius: "12px",
+                  fontSize: "14px",
+                  fontWeight: 900,
+                  cursor: "pointer",
+                  boxShadow: "0 0 20px rgba(255, 210, 31, 0.4)",
+                  letterSpacing: "0.02em"
+                }}
+              >
+                ✓ VIEW MY SUBMISSION CASEFILE →
+              </button>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                <button
+                  type="button"
+                  onClick={() => navigate("/citizen/complaints")}
+                  style={{
+                    background: "#1D2023",
+                    border: "1px solid rgba(255, 255, 255, 0.15)",
+                    color: "#F5F5F2",
+                    padding: "11px 16px",
+                    borderRadius: "10px",
+                    fontSize: "12.5px",
+                    fontWeight: 800,
+                    cursor: "pointer"
+                  }}
+                >
+                  📋 My Submissions
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate("/citizen")}
+                  style={{
+                    background: "#1D2023",
+                    border: "1px solid rgba(255, 255, 255, 0.15)",
+                    color: "#F5F5F2",
+                    padding: "11px 16px",
+                    borderRadius: "10px",
+                    fontSize: "12.5px",
+                    fontWeight: 800,
+                    cursor: "pointer"
+                  }}
+                >
+                  📊 Citizen Dashboard
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

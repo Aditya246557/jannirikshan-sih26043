@@ -94,7 +94,7 @@ export default function AdminLayout() {
             </div>
             <div>
               <div style={{ fontSize: "16px", fontWeight: 900, color: "#F5F5F2", letterSpacing: "0.02em" }}>
-                SOCIO-SPHERE
+                JanNirikshan
               </div>
               <div style={{ fontSize: "10px", fontWeight: 800, color: "#38BDF8", letterSpacing: "0.08em" }}>
                 SIH26043 • GOVT ADMIN

@@ -23,8 +23,9 @@ WORKDIR /app
 # Install curl for container health check
 RUN apk add --no-cache curl
 
-# Create directory for persistent uploads
+# Create directory for persistent uploads and copy existing evidence
 RUN mkdir -p /app/uploads/complaints
+COPY uploads /app/uploads
 
 # Copy jar from builder stage
 COPY --from=builder /app/target/SIH26043-0.0.1-SNAPSHOT.jar app.jar

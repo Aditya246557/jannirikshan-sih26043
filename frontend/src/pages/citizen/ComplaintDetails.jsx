@@ -355,17 +355,22 @@ export default function ComplaintDetails() {
                   return (
                     <div key={ev.id || idx} style={{ background: "#1D2023", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "10px", overflow: "hidden", padding: "8px" }}>
                       {isImg ? (
-                        <a href={imgUrl} target="_blank" rel="noopener noreferrer">
+                        <a href={imgUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", display: "block" }}>
                           <img
                             src={imgUrl}
                             alt={ev.originalFileName || `Evidence #${idx + 1}`}
                             onError={(e) => {
-                              if (!e.target.src.includes(":8080")) {
-                                e.target.src = `http://localhost:8080${imgUrl.startsWith('/') ? imgUrl : '/' + imgUrl}`;
+                              e.currentTarget.style.display = "none";
+                              if (e.currentTarget.nextElementSibling) {
+                                e.currentTarget.nextElementSibling.style.display = "flex";
                               }
                             }}
                             style={{ width: "100%", height: "110px", objectFit: "cover", borderRadius: "8px", display: "block" }}
                           />
+                          <div style={{ height: "110px", display: "none", alignItems: "center", justifyContent: "center", background: "#111315", borderRadius: "8px", fontSize: "24px", color: "#8F9499", flexDirection: "column", gap: "4px" }}>
+                            <span>📷</span>
+                            <span style={{ fontSize: "10px" }}>Image Preview</span>
+                          </div>
                         </a>
                       ) : (
                         <div style={{ height: "110px", display: "flex", alignItems: "center", justifyContent: "center", background: "#111315", borderRadius: "8px", fontSize: "32px" }}>

@@ -75,7 +75,7 @@ export default function Landing() {
           </div>
           <div>
             <span style={{ fontSize: "17px", fontWeight: 900, letterSpacing: "0.03em", color: "#F5F5F2" }}>
-              SOCIO-SPHERE
+              JanNirikshan
             </span>
             <div style={{ fontSize: "9.5px", fontWeight: 800, color: "#FFD21F", letterSpacing: "0.08em" }}>
               SIH26043 • NATIONAL CIVIC INNOVATION GRID
@@ -451,7 +451,7 @@ export default function Landing() {
       }}>
         <div style={{ maxWidth: "800px", margin: "0 auto" }}>
           <div style={{ fontSize: "14px", fontWeight: 800, color: "#F5F5F2", marginBottom: "8px" }}>
-            SOCIO-SPHERE • National Civic Innovation & Problem-Solving Grid
+            JanNirikshan • National Civic Innovation & Problem-Solving Grid
           </div>
           <p style={{ margin: "0 0 16px" }}>
             Built for Smart India Hackathon 2026 (SIH26043) by Team Advanced Agentic Coding.

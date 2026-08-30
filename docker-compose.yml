@@ -4,7 +4,7 @@ services:
   # ============================================================
   postgres:
     image: postgres:17-alpine
-    container_name: sociosphere-postgres
+    container_name: jannirikshan-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-sih26043}
@@ -21,7 +21,7 @@ services:
       timeout: 5s
       retries: 10
     networks:
-      - sociosphere_net
+      - jannirikshan_net
 
   # ============================================================
   # 2. FASTAPI AI SERVICE (YOLO + NLP + DEDUPLICATION)
@@ -30,7 +30,8 @@ services:
     build:
       context: ./ai_service
       dockerfile: Dockerfile
-    container_name: sociosphere-ai-service
+    image: jannirikshan-ai-service
+    container_name: jannirikshan-ai-service
     restart: unless-stopped
     ports:
       - "8000:8000"
@@ -41,7 +42,7 @@ services:
       retries: 10
       start_period: 20s
     networks:
-      - sociosphere_net
+      - jannirikshan_net
 
   # ============================================================
   # 3. SPRING BOOT BACKEND API
@@ -50,7 +51,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: sociosphere-backend
+    image: jannirikshan-backend
+    container_name: jannirikshan-backend
     restart: unless-stopped
     environment:
       DB_HOST: postgres
@@ -70,7 +72,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - uploads_data:/app/uploads
+      - ./backend/uploads:/app/uploads
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/api/actuator/health || exit 1"]
       interval: 10s
@@ -78,7 +80,7 @@ services:
       retries: 10
       start_period: 30s
     networks:
-      - sociosphere_net
+      - jannirikshan_net
 
   # ============================================================
   # 4. REACT / VITE FRONTEND (NGINX SPA & REVERSE PROXY)
@@ -87,7 +89,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: sociosphere-frontend
+    image: jannirikshan-frontend
+    container_name: jannirikshan-frontend
     restart: unless-stopped
     depends_on:
       backend:
@@ -100,18 +103,16 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - sociosphere_net
+      - jannirikshan_net
 
 # ============================================================
 # NETWORKS & VOLUMES
 # ============================================================
 networks:
-  sociosphere_net:
-    name: sociosphere_net
+  jannirikshan_net:
+    name: jannirikshan_net
     driver: bridge
 
 volumes:
   postgres_data:
     name: sociosphere_postgres_data
-  uploads_data:
-    name: sociosphere_uploads_data

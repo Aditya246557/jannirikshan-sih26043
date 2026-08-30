@@ -186,7 +186,7 @@ export default function UniversityResources() {
               🏛️
             </div>
             <div>
-              <div style={{ fontSize: "16px", fontWeight: 900, color: "#F5F5F2" }}>SOCIO-SPHERE</div>
+              <div style={{ fontSize: "16px", fontWeight: 900, color: "#F5F5F2" }}>JanNirikshan</div>
               <div style={{ fontSize: "10px", fontWeight: 800, color: "#FF4FA3", letterSpacing: "0.08em" }}>
                 SIH26043 • UNIVERSITY
               </div>

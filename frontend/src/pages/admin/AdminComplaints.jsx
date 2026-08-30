@@ -23,11 +23,11 @@ export default function AdminComplaints() {
     setError("");
     try {
       const [compRes, uniRes] = await Promise.all([
-        api.get("/complaints", { params: { page: 0, size: 100 } }).catch(() => ({ data: [] })),
+        api.get("/complaints", { params: { page: 0, size: 500 } }).catch(() => ({ data: [] })),
         api.get("/university/all").catch(() => ({ data: [] }))
       ]);
 
-      const list = Array.isArray(compRes)
+      const rawList = Array.isArray(compRes)
         ? compRes
         : Array.isArray(compRes?.data)
         ? compRes.data
@@ -36,7 +36,14 @@ export default function AdminComplaints() {
         : Array.isArray(compRes?.data?.content)
         ? compRes.data.content
         : [];
-      setComplaints(list);
+
+      const sortedList = [...rawList].sort(
+        (a, b) =>
+          (new Date(b?.createdAt || 0).getTime() || 0) -
+          (new Date(a?.createdAt || 0).getTime() || 0) ||
+          ((b?.id || 0) - (a?.id || 0))
+      );
+      setComplaints(sortedList);
 
       const uniList = Array.isArray(uniRes)
         ? uniRes
@@ -148,15 +155,16 @@ export default function AdminComplaints() {
 
   const filtered = safeComplaints.filter((c) => {
     const s = String(c?.status || "").toUpperCase();
-    if (filter === "PENDING" && !["SUBMITTED", "UNDER_REVIEW"].includes(s)) return false;
-    if (filter === "ASSIGNED" && !["ASSIGNED", "IN_PROGRESS", "PROTOTYPE"].includes(s)) return false;
-    if (filter === "RESOLVED" && !["RESOLVED", "COMPLETED"].includes(s)) return false;
+    if (filter === "PENDING" && !["SUBMITTED", "UNDER_REVIEW", "CLARIFICATION_REQUIRED"].includes(s)) return false;
+    if (filter === "ASSIGNED" && !["APPROVED", "ASSIGNED", "IN_PROGRESS", "PROTOTYPE", "TESTING", "PILOT"].includes(s)) return false;
+    if (filter === "RESOLVED" && !["RESOLVED", "COMPLETED", "CLOSED"].includes(s)) return false;
     if (search.trim()) {
       const q = search.toLowerCase();
       return (
         String(c?.title || "").toLowerCase().includes(q) ||
         String(c?.district || "").toLowerCase().includes(q) ||
-        String(c?.category || "").toLowerCase().includes(q)
+        String(c?.category || "").toLowerCase().includes(q) ||
+        String(c?.id || "").includes(q)
       );
     }
     return true;
@@ -506,18 +514,22 @@ export default function AdminComplaints() {
                       }}
                     >
                       {ev.contentType?.startsWith("image/") || ev.fileUrl?.match(/\.(jpg|jpeg|png|webp|gif)$/i) ? (
-                        <a href={ev.fileUrl || `/api/files/complaints/${selected.id}/${ev.storageFileName}`} target="_blank" rel="noopener noreferrer">
+                        <a href={ev.fileUrl || `/api/files/complaints/${selected.id}/${ev.storageFileName}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", display: "block" }}>
                           <img
                             src={ev.fileUrl || `/api/files/complaints/${selected.id}/${ev.storageFileName}`}
                             alt={ev.originalFileName || "Evidence"}
                             onError={(e) => {
-                              const fallbackUrl = ev.fileUrl || `/api/files/complaints/${selected.id}/${ev.storageFileName}`;
-                              if (!e.target.src.includes(":8080")) {
-                                e.target.src = `http://localhost:8080${fallbackUrl.startsWith('/') ? fallbackUrl : '/' + fallbackUrl}`;
+                              e.currentTarget.style.display = "none";
+                              if (e.currentTarget.nextElementSibling) {
+                                e.currentTarget.nextElementSibling.style.display = "flex";
                               }
                             }}
                             style={{ width: "100%", height: "100px", objectFit: "cover", borderRadius: "6px", display: "block" }}
                           />
+                          <div style={{ height: "100px", display: "none", alignItems: "center", justifyContent: "center", background: "#111315", borderRadius: "6px", fontSize: "22px", color: "#8F9499", flexDirection: "column", gap: "4px" }}>
+                            <span>📷</span>
+                            <span style={{ fontSize: "9px" }}>Image Preview</span>
+                          </div>
                         </a>
                       ) : (
                         <div style={{ height: "100px", display: "flex", alignItems: "center", justifyContent: "center", background: "#111315", borderRadius: "6px", fontSize: "28px" }}>

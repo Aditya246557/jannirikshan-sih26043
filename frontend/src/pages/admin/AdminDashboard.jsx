@@ -121,16 +121,22 @@ export default function AdminDashboard() {
           ...d
         });
 
-        const list = Array.isArray(compRes)
+        const rawComp = Array.isArray(compRes)
           ? compRes
-          : Array.isArray(compRes?.content)
+          : compRes?.content
           ? compRes.content
-          : Array.isArray(compRes?.data)
-          ? compRes.data
-          : Array.isArray(compRes?.data?.content)
+          : compRes?.data?.content
           ? compRes.data.content
+          : compRes?.data
+          ? compRes.data
           : [];
-        setComplaints(list);
+        const sortedComp = [...rawComp].sort(
+          (a, b) =>
+            (new Date(b?.createdAt || 0).getTime() || 0) -
+            (new Date(a?.createdAt || 0).getTime() || 0) ||
+            ((b?.id || 0) - (a?.id || 0))
+        );
+        setComplaints(sortedComp);
 
         const logs = Array.isArray(auditRes)
           ? auditRes
@@ -149,11 +155,11 @@ export default function AdminDashboard() {
   const safeComplaints = Array.isArray(complaints) ? complaints : [];
   const safeAuditLogs = Array.isArray(auditLogs) ? auditLogs : [];
 
-  const totalChallenges = safeComplaints.length || stats?.total || 17;
-  const pendingCount = safeComplaints.filter((c) => ["SUBMITTED", "UNDER_REVIEW"].includes(c?.status)).length || stats?.pending || 3;
-  const solvingCount = safeComplaints.filter((c) => ["ASSIGNED", "IN_PROGRESS", "PROTOTYPE"].includes(c?.status)).length || stats?.assigned || 5;
-  const resolvedCount = safeComplaints.filter((c) => ["RESOLVED", "COMPLETED"].includes(c?.status)).length || stats?.resolved || 7;
-  const criticalCount = safeComplaints.filter((c) => c?.priority === "CRITICAL").length || stats?.critical || 2;
+  const totalChallenges = stats?.totalChallenges ?? stats?.totalComplaints ?? stats?.total ?? safeComplaints.length;
+  const pendingCount = stats?.pendingVerification ?? stats?.pending ?? stats?.submitted ?? safeComplaints.filter((c) => ["SUBMITTED", "UNDER_REVIEW"].includes(c?.status)).length;
+  const solvingCount = stats?.activeProjects ?? stats?.assigned ?? safeComplaints.filter((c) => ["ASSIGNED", "IN_PROGRESS", "PROTOTYPE"].includes(c?.status)).length;
+  const resolvedCount = stats?.completedProjects ?? stats?.resolved ?? safeComplaints.filter((c) => ["RESOLVED", "COMPLETED", "CLOSED"].includes(c?.status)).length;
+  const criticalCount = stats?.criticalChallenges ?? stats?.critical ?? safeComplaints.filter((c) => c?.priority === "CRITICAL").length;
 
   return (
     <div style={{ maxWidth: "1400px", margin: "0 auto" }}>

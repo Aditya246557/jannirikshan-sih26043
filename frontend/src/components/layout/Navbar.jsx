@@ -207,7 +207,7 @@ export default function Navbar() {
                             🌐
                         </div>
                         <div>
-                            <div style={{ fontSize: "18px", fontWeight: 900, letterSpacing: "-0.02em" }}>SOCIO-SPHERE</div>
+                            <div style={{ fontSize: "18px", fontWeight: 900, letterSpacing: "-0.02em" }}>JanNirikshan</div>
                             <div style={{ fontSize: "10px", color: "#94a3b8", letterSpacing: "0.08em" }}>CROWDSOURCED SOCIETAL INNOVATION</div>
                         </div>
                     </Link>

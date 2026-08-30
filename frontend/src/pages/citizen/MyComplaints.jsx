@@ -20,8 +20,17 @@ export default function MyComplaints() {
     setLoading(true);
     setError("");
     try {
-      const data = await complaintService.getMine(0, 100);
-      setComplaints(Array.isArray(data) ? data : data?.content || []);
+      const data = await complaintService.getMine(0, 500);
+      const rawList = Array.isArray(data)
+        ? data
+        : data?.content
+        ? data.content
+        : data?.data?.content
+        ? data.data.content
+        : data?.data
+        ? data.data
+        : [];
+      setComplaints(rawList);
     } catch (err) {
       console.error("Error loading submissions:", err);
       setError("Failed to load your submissions. Please try again.");
@@ -32,8 +41,8 @@ export default function MyComplaints() {
 
   // Metrics
   const totalSubmissions = complaints.length;
-  const pendingVerification = complaints.filter((c) => ["SUBMITTED", "UNDER_REVIEW"].includes(c.status)).length;
-  const activeRd = complaints.filter((c) => ["ASSIGNED", "IN_PROGRESS", "PROTOTYPE", "TESTING", "PILOT"].includes(c.status)).length;
+  const pendingVerification = complaints.filter((c) => ["SUBMITTED", "UNDER_REVIEW", "CLARIFICATION_REQUIRED"].includes(c.status)).length;
+  const activeRd = complaints.filter((c) => ["APPROVED", "ASSIGNED", "IN_PROGRESS", "PROTOTYPE", "TESTING", "PILOT"].includes(c.status)).length;
   const resolvedDeployed = complaints.filter((c) => ["RESOLVED", "COMPLETED", "CLOSED"].includes(c.status)).length;
 
   const categoriesList = useMemo(() => {
@@ -49,8 +58,8 @@ export default function MyComplaints() {
   const getStageIndex = (status) => {
     const s = String(status || "").toUpperCase();
     if (s === "SUBMITTED") return 0;
-    if (s === "UNDER_REVIEW") return 1;
-    if (s === "ASSIGNED") return 2;
+    if (["UNDER_REVIEW", "CLARIFICATION_REQUIRED"].includes(s)) return 1;
+    if (["APPROVED", "ASSIGNED"].includes(s)) return 2;
     if (["IN_PROGRESS", "PROJECT_CREATED"].includes(s)) return 3;
     if (["PROTOTYPE", "TESTING", "PILOT"].includes(s)) return 4;
     if (["RESOLVED", "COMPLETED", "CLOSED"].includes(s)) return 5;
@@ -69,8 +78,8 @@ export default function MyComplaints() {
         }
 
         if (statusFilter !== "ALL") {
-          if (statusFilter === "PENDING" && !["SUBMITTED", "UNDER_REVIEW"].includes(c.status)) return false;
-          if (statusFilter === "ACTIVE" && !["ASSIGNED", "IN_PROGRESS", "PROTOTYPE", "TESTING", "PILOT"].includes(c.status)) return false;
+          if (statusFilter === "PENDING" && !["SUBMITTED", "UNDER_REVIEW", "CLARIFICATION_REQUIRED"].includes(c.status)) return false;
+          if (statusFilter === "ACTIVE" && !["APPROVED", "ASSIGNED", "IN_PROGRESS", "PROTOTYPE", "TESTING", "PILOT"].includes(c.status)) return false;
           if (statusFilter === "RESOLVED" && !["RESOLVED", "COMPLETED", "CLOSED"].includes(c.status)) return false;
         }
 
@@ -80,13 +89,25 @@ export default function MyComplaints() {
         return true;
       })
       .sort((a, b) => {
-        if (sortBy === "NEWEST") return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
-        if (sortBy === "OLDEST") return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+        if (sortBy === "NEWEST") {
+          return (
+            (new Date(b.createdAt || 0).getTime() || 0) -
+            (new Date(a.createdAt || 0).getTime() || 0) ||
+            (b.id - a.id)
+          );
+        }
+        if (sortBy === "OLDEST") {
+          return (
+            (new Date(a.createdAt || 0).getTime() || 0) -
+            (new Date(b.createdAt || 0).getTime() || 0) ||
+            (a.id - b.id)
+          );
+        }
         if (sortBy === "PRIORITY") {
           const rank = { CRITICAL: 4, HIGH: 3, MEDIUM: 2, LOW: 1 };
-          return (rank[b.priority] || 0) - (rank[a.priority] || 0);
+          return (rank[b.priority] || 0) - (rank[a.priority] || 0) || (b.id - a.id);
         }
-        return 0;
+        return (b.id - a.id);
       });
   }, [complaints, search, statusFilter, priorityFilter, categoryFilter, sortBy]);
 

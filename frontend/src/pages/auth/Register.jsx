@@ -121,7 +121,7 @@ export default function Register() {
               </div>
               <div>
                 <span style={{ fontSize: "17px", fontWeight: 900, letterSpacing: "0.04em", color: "#F5F5F2" }}>
-                  SOCIO-SPHERE
+                  JanNirikshan
                 </span>
                 <div style={{ fontSize: "9.5px", fontWeight: 800, color: "#FFD21F", letterSpacing: "0.08em" }}>
                   SIH26043 • NATIONAL CIVIC INNOVATION GRID
@@ -217,7 +217,7 @@ export default function Register() {
               Create your account
             </h1>
             <p style={{ fontSize: "13px", color: "#8F9499", margin: 0 }}>
-              Join SOCIO-SPHERE and be part of the change.
+              Join JanNirikshan and be part of the change.
             </p>
           </div>
 

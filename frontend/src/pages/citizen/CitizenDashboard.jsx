@@ -208,9 +208,23 @@ export default function CitizenDashboard() {
     ])
       .then(([compRes, notifRes, impactRes]) => {
         if (!isMounted) return;
-        const list = Array.isArray(compRes) ? compRes : compRes?.content || [];
-        setComplaints(list);
-        setNotifications(notifRes?.content || notifRes || []);
+        const rawList = Array.isArray(compRes)
+          ? compRes
+          : compRes?.content
+          ? compRes.content
+          : compRes?.data?.content
+          ? compRes.data.content
+          : compRes?.data
+          ? compRes.data
+          : [];
+        const sortedList = [...rawList].sort(
+          (a, b) =>
+            (new Date(b.createdAt || 0).getTime() || 0) -
+            (new Date(a.createdAt || 0).getTime() || 0) ||
+            (b.id - a.id)
+        );
+        setComplaints(sortedList);
+        setNotifications(notifRes?.content || notifRes?.data || notifRes || []);
         if (impactRes) setImpact(impactRes);
       })
       .catch((err) => console.error("Citizen dashboard fetch error:", err))
@@ -785,7 +799,7 @@ export default function CitizenDashboard() {
             </div>
           </div>
 
-          {/* SOCIO-SPHERE IMPACT (Civic Pulse) */}
+          {/* JanNirikshan IMPACT (Civic Pulse) */}
           <div style={{
             background: "#222528",
             border: "1px solid rgba(255, 255, 255, 0.08)",
@@ -795,7 +809,7 @@ export default function CitizenDashboard() {
             boxShadow: "0 6px 24px rgba(0, 0, 0, 0.35)"
           }}>
             <span style={{ fontSize: "10px", fontWeight: 800, color: "#FFD21F", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-              SOCIO-SPHERE IMPACT
+              JanNirikshan IMPACT
             </span>
             <h3 style={{ fontSize: "15px", margin: "3px 0 12px", color: "#F5F5F2", fontWeight: 800 }}>
               Civic Mission Pulse
