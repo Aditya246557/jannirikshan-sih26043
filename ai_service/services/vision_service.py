@@ -147,7 +147,13 @@ def detect_and_validate_evidence(
 
     # Stage 2: YOLO Detection
     model = load_vision_model()
-    results = model.predict(source=image, conf=0.01, imgsz=640, verbose=False)
+    results = model.predict(
+    source=image,
+    conf=0.25,
+    imgsz=416,
+    device="cpu",
+    verbose=False
+)
 
     detections = []
     for result in results:
